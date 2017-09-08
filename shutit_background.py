@@ -37,7 +37,7 @@ class ShutItBackgroundCommand(object):
 
 	def __str__(self):
 		string = str(self.sendspec)
-		string += '\n---- Background object ----'
+		string += '\n---- Background object BEGIN ----'
 		string += '\nblock_other_commands: ' + str(self.block_other_commands)
 		string += '\ncwd:                  ' + str(self.cwd)
 		string += '\npid:                  ' + str(self.pid)
@@ -46,7 +46,7 @@ class ShutItBackgroundCommand(object):
 		string += '\nrun_state:            ' + str(self.run_state)
 		string += '\nstart_time:           ' + str(self.start_time)
 		string += '\ntries:                ' + str(self.tries)
-		string += '\n----                   ----'
+		string += '\n----                   END   ----'
 		return string
 
 
@@ -83,6 +83,7 @@ class ShutItBackgroundCommand(object):
 
 
 	def check_background_command_state(self):
+		shutit_global.shutit_global_object.log('CHECKING background task: ' + self.sendspec.send + ', id: ' + self.id)
 		shutit_pexpect_child = self.sendspec.shutit_pexpect_child
 		# Check the command has been started
 		if not self.sendspec.started:
