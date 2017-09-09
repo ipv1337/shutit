@@ -107,15 +107,17 @@ class ShutItBackgroundCommand(object):
             #   U       Marks a process in uninterruptible wait.
             #   Z       Marks a dead process (a ``zombie'').
 			if self.run_state in ('I','R','T','U','Z'):
+				shutit_global.shutit_global_object.log('background task run state: ' + self.run_state, level=logging.DEBUG)
 				self.run_state = 'S'
-			# honour sendspec.timeout
 			assert self.run_state in ('S',)
+			# honour sendspec.timeout
 			if self.sendspec.timeout is not None:
 				current_time = time.time()
 				time_taken = current_time - self.start_time
 				if time_taken > self.sendspec.timeout:
 					self.sendspec.shutit_pexpect_child.quick_send(' kill -9 ' + self.pid)
 					self.run_state = 'T'
+			assert self.run_state in ('S','T')
 			return self.run_state
 		else:
 			shutit_global.shutit_global_object.log('background task: ' + self.sendspec.send + ', id: ' + self.id + ' complete')
@@ -137,8 +139,11 @@ class ShutItBackgroundCommand(object):
 				else:
 					shutit_global.shutit_global_object.log('background task final failure: ' + self.sendspec.send + ' failed with exit code: ' + self.return_value, level=logging.DEBUG)
 					self.run_state = 'F'
+				assert self.run_state in ('C','F')
 				return self.run_state
 			else:
 				shutit_global.shutit_global_object.log('background task: ' + self.sendspec.send + ' succeeded with exit code: ' + self.return_value, level=logging.DEBUG)
+			assert self.run_state in ('C',)
 			return self.run_state
+		# Should never get here
 		assert False
